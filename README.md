@@ -9,17 +9,7 @@
 
 &nbsp;
 
-### Actions (Player)
-#### CRUD
-##### C
-- Register
-##### R
-- Login
-- getPlayerByUsername
-- getPlayerByEmail
-##### U
-- ChangePassword
-- ChangeEmail
-- UpdateWinnings
-##### D
-- N/A
+## Next Steps:
+- Create RDS instance on AWS (try to automate with CodeBuild using this repo)
+- Create API Gateway endpoints (same as above)
+- Upload to Lambda
