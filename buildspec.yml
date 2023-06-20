@@ -4,6 +4,8 @@ env:
   variables:
     LAMBDA_FUNCTION_NAME: "DeckDerbyJavaAPI"
     DEPLOY_ACTION: "deploy" # either deploy or update; does nothing for now
+    POLICY_NAME: "DeckDerbyAPI-Lambda-Policy"
+    ROLE_NAME: "DeckDerbyAPI-Lambda-Role"
 
 phases:
   install:
@@ -20,13 +22,7 @@ phases:
   post_build:
     commands:
       - echo "Updating lambda Function..."
-      - |
-        POLICY_NAME=DeckDerbyAPI-Lambda-Policy
-        ROLE_NAME=DeckDerbyAPI-Lambda-Role
-        LAMBDA_FUNCTION_NAME=DeckDerbyJavaAPI
-        
-        # Check if the policy already exists
-        EXISTING_POLICY=$(aws iam list-policies --query "Policies[?PolicyName=='$POLICY_NAME'].Arn" --output text)
+      - EXISTING_POLICY=$(aws iam list-policies --query "Policies[?PolicyName=='$POLICY_NAME'].Arn" --output text) # Check if the policy already exists
         if [[ -z "$EXISTING_POLICY" ]]; then
           echo "Policy does not exist. Creating new policy..."
         
@@ -44,7 +40,7 @@ phases:
         fi
         
         # Check if the role already exists
-        EXISTING_ROLE=$(aws iam list-roles --query "Roles[?RoleName=='$ROLE_NAME'].Arn" --output text)
+      - EXISTING_ROLE=$(aws iam list-roles --query "Roles[?RoleName=='$ROLE_NAME'].Arn" --output text)
         if [[ -z "$EXISTING_ROLE" ]]; then
           echo "Role does not exist. Creating new role..."
         
@@ -62,7 +58,7 @@ phases:
         fi
         
         # Check if the Lambda function already exists
-        EXISTING_FUNCTION=$(aws lambda get-function --function-name $LAMBDA_FUNCTION_NAME --output text)
+      - EXISTING_FUNCTION=$(aws lambda get-function --function-name $LAMBDA_FUNCTION_NAME --output text)
         if [[ "$?" -eq 0 ]]; then
           echo "Lambda function already exists."
           aws lambda update-function-code --function-name $LAMBDA_FUNCTION_NAME --zip-file fileb://./target/deck-derby-api-1.0.jar
