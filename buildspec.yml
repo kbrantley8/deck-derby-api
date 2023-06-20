@@ -1,16 +1,16 @@
 version: 0.2
+
+env:
+  variables:
+    LAMBDA_FUNCTION_NAME: "DeckDerbyJavaAPI"
+    DEPLOY_ACTION: "deploy" # either deploy or update; does nothing for now
+
 phases:
   install:
     runtime-versions:
       java: corretto17
     commands:
       - echo "Installing dependencies..."
-
-  pre_build:
-    commands:
-      - echo "Prebuild phase..."
-      - aws lambda get-function --function-name DeckDerbyJavaAPI --region us-east-1 > /dev/null 2>&1
-      - if [[ $? -eq 0 ]]; then echo "Lambda function already exists, skipping redeployment..."; else echo "Lambda does not exist. Creating now..." && aws lambda create-function --function-name DeckDerbyJavaAPI --runtime java17 --handler deckderby.Handler::handleRequest --zip-file fileb://target/your-artifact.jar --region YourRegion; fi
 
   build:
     commands:
@@ -19,9 +19,64 @@ phases:
 
   post_build:
     commands:
-      - echo "Creating lambda if it doesn't exist..."
-      - aws lambda get-function --function-name DeckDerbyJavaAPI --region us-east-1 > /dev/null 2>&1
-      - if [[ $? -eq 0 ]]; then echo "Lambda function already exists, skipping redeployment..."; else echo "Lambda does not exist. Creating now..." && aws lambda create-function --function-name DeckDerbyJavaAPI --runtime java17 --handler deckderby.Handler::handleRequest --zip-file fileb://./target/deck-derby-api-1.0.jar --region us-east-1 --environment Variables={ENV=dev}; fi
       - echo "Updating lambda Function..."
-      - aws lambda update-function-code --function-name DeckDerbyJavaAPI --zip-file fileb://./target/deck-derby-api-1.0.jar
-      - echo "DONE!!"
+      - |
+        POLICY_NAME=DeckDerbyAPI-Lambda-Policy
+        ROLE_NAME=DeckDerbyAPI-Lambda-Role
+        LAMBDA_FUNCTION_NAME=DeckDerbyJavaAPI
+        
+        # Check if the policy already exists
+        EXISTING_POLICY=$(aws iam list-policies --query "Policies[?PolicyName=='$POLICY_NAME'].Arn" --output text)
+        if [[ -z "$EXISTING_POLICY" ]]; then
+          echo "Policy does not exist. Creating new policy..."
+        
+          # Create IAM policy
+          aws iam create-policy --policy-name $POLICY_NAME --policy-document file://aws-config/lambda-execution-policy.json
+        
+          # Retrieve the newly created policy ARN
+          POLICY_ARN=$(aws iam list-policies --query "Policies[?PolicyName=='$POLICY_NAME'].Arn" --output text)
+        else
+          echo "Policy already exists."
+        
+          # Retrieve the existing policy ARN
+          POLICY_ARN=$EXISTING_POLICY
+          aws iam update-policy --policy-arn $POLICY_ARN --policy-document file://aws-config/lambda-execution-policy.json
+        fi
+        
+        # Check if the role already exists
+        EXISTING_ROLE=$(aws iam list-roles --query "Roles[?RoleName=='$ROLE_NAME'].Arn" --output text)
+        if [[ -z "$EXISTING_ROLE" ]]; then
+          echo "Role does not exist. Creating new role..."
+        
+          # Create IAM role
+          aws iam create-role --role-name $ROLE_NAME --assume-role-policy-document file://aws-config/lambda-trust-policy.json
+        
+          # Retrieve the newly created role ARN
+          ROLE_ARN=$(aws iam get-role --role-name $ROLE_NAME --query "Role.Arn" --output text)
+        else
+          echo "Role already exists."
+        
+          # Retrieve the existing role ARN
+          ROLE_ARN=$EXISTING_ROLE
+          aws iam update-role --role-name $ROLE_NAME --assume-role-policy-document file://aws-config/lambda-trust-policy.json
+        fi
+        
+        # Check if the Lambda function already exists
+        EXISTING_FUNCTION=$(aws lambda get-function --function-name $LAMBDA_FUNCTION_NAME --output text)
+        if [[ "$?" -eq 0 ]]; then
+          echo "Lambda function already exists."
+          aws lambda update-function-code --function-name $LAMBDA_FUNCTION_NAME --zip-file fileb://./target/deck-derby-api-1.0.jar
+          aws lambda update-function-configuration --function-name $LAMBDA_FUNCTION_NAME --environment Variables={ENV=dev}
+        else
+          echo "Lambda function does not exist. Creating new function..."
+        
+          # Create Lambda function
+          aws lambda create-function --function-name $LAMBDA_FUNCTION_NAME --runtime java17 --role $ROLE_ARN --handler deckderby.Handler::handleRequest --zip-file fileb://./target/deck-derby-api-1.0.jar --region us-east-1 --environment Variables={ENV=dev}
+        fi
+
+#      - echo "Creating lambda if it doesn't exist..."
+#      - aws lambda get-function --function-name $LAMBDA_FUNCTION_NAME --region us-east-1 > /dev/null 2>&1
+#      - if [[ $? -eq 0 ]]; then echo "Lambda function already exists, skipping redeployment..."; else echo "Lambda does not exist. Creating now..." && aws lambda create-function --function-name $LAMBDA_FUNCTION_NAME --runtime java17 --handler deckderby.Handler::handleRequest --zip-file fileb://./target/deck-derby-api-1.0.jar --region us-east-1 --environment Variables={ENV=dev}; fi
+#      - echo "Updating lambda Function..."
+#      - aws lambda update-function-code --function-name $LAMBDA_FUNCTION_NAME --zip-file fileb://./target/deck-derby-api-1.0.jar
+#      - echo "DONE!!"
