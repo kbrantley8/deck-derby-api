@@ -62,8 +62,8 @@ phases:
         EXISTING_FUNCTION=$(aws lambda get-function --function-name $LAMBDA_FUNCTION_NAME --output text)
         if [ "$?" -eq 0 ]; then
           echo "Lambda function already exists."
-          aws lambda update-function-code --function-name $LAMBDA_FUNCTION_NAME --zip-file fileb://./target/deck-derby-api-1.0.jar
-          aws lambda update-function-configuration --function-name $LAMBDA_FUNCTION_NAME --environment Variables={ENV=dev}
+          aws lambda update-function-code --function-name $LAMBDA_FUNCTION_NAME --zip-file fileb://./target/deck-derby-api-1.0.jar;
+          aws lambda update-function-configuration --function-name $LAMBDA_FUNCTION_NAME --environment Variables={ENV=dev};
         else
           echo "Lambda function does not exist. Creating new function..."
         
