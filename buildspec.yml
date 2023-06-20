@@ -55,7 +55,6 @@ phases:
         
           # Retrieve the existing role ARN
           ROLE_ARN=$EXISTING_ROLE
-          aws iam update-role --role-name $ROLE_NAME --assume-role-policy-document file://./aws-config/lambda-trust-policy.json
         fi
         
         # Check if the Lambda function already exists
