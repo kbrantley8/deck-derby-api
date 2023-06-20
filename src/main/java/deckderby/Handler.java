@@ -1,43 +1,34 @@
 package deckderby;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import deckderby.controllers.PlayerController;
-import deckderby.models.Player;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import deckderby.utils.ApplicationPropertiesManager;
 import deckderby.utils.ApplicationRouteDirector;
-import deckderby.utils.logger.ApplicationLogger;
-import deckderby.utils.logger.LoggerContext;
 
 import java.sql.SQLException;
 
 public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse>{
 
-    private ApplicationLogger logger;
+    private static final Logger logger = LogManager.getLogger(Handler.class);
     private final String environment;
 
     public Handler() {
-        logger = null;
         environment = System.getenv("ENV");
     }
 
-    public void initialize(Context context) {
-        if (logger == null) {
-            LoggerContext.initialize(context);
-            LoggerContext lambdaContext = LoggerContext.getInstance();
-            logger = lambdaContext.getLogger();
-        }
+    public void initialize() {
         ApplicationPropertiesManager.loadProperties(environment);
     }
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context)
     {
-        initialize(context);
+        initialize();
 
         logger.info(String.format("Incoming request with routeKey: [%s] and requestId: [%s]", event.getRouteKey(), event.getRequestContext().getRequestId()));
 
@@ -46,10 +37,15 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
             resp = new ApplicationRouteDirector().handleRoute(event);
         } catch (SQLException | ClassNotFoundException | JsonProcessingException e) {
             e.printStackTrace();
+            return APIGatewayV2HTTPResponse.builder().withStatusCode(400).withBody(e.getMessage()).build();
         }
 
-        logger.info(String.format("Response for requestId: [%s] \t %s", event.getRequestContext().getRequestId(),resp.toString()));
+        if (resp != null) {
+            logger.info(String.format("Response for requestId: [%s] -> %s", event.getRequestContext().getRequestId(), resp.toString()));
+            return resp;
+        } else {
+            return APIGatewayV2HTTPResponse.builder().withStatusCode(400).withBody("Response is empty!").build();
+        }
 
-        return resp;
     }
 }

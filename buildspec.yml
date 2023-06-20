@@ -1,0 +1,18 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+    commands:
+      - echo "Installing dependencies..."
+      -
+  build:
+    commands:
+      - echo "Executing build using [ mvn clean package ]"
+      - mvn clean package
+
+  post_build:
+    commands:
+      - echo "Updating lambda Function..."
+      - aws lambda update-function-code --function-name DeckDerbyJavaAPI --zip-file fileb://./target/deck-derby-api-1.0.jar
+      - echo "DONE!!"

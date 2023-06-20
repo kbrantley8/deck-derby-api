@@ -1,10 +1,11 @@
 package deckderby.dao;
 
+import deckderby.Handler;
 import deckderby.models.Player;
 import deckderby.utils.ApplicationPropertiesManager;
-import deckderby.utils.logger.ApplicationLogger;
-import deckderby.utils.logger.LoggerContext;
 import deckderby.utils.misc.PasswordUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,9 +13,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class PlayerDAOImpl implements PlayerDAO {
-    private final ApplicationLogger logger = LoggerContext.getInstance().getLogger();
+    private static final Logger logger = LogManager.getLogger(PlayerDAOImpl.class);
 
-    private Connection connection;
+    private final Connection connection;
     private final String tableName;
 
     public PlayerDAOImpl() throws ClassNotFoundException, SQLException {
@@ -122,35 +123,6 @@ public class PlayerDAOImpl implements PlayerDAO {
         ps.executeUpdate();
     }
 
-//    @Override
-//    public Player login(String username, String password) throws SQLException {
-//        String criteria_col = "username";
-//        String sql_stmt = String.format(
-//                "SELECT username, password_hash, password_salt FROM %s WHERE %s=?",
-//                this.tableName,
-//                criteria_col);
-//
-//        PreparedStatement ps = this.connection.prepareStatement(sql_stmt);
-//
-//        ps.setFetchSize(1);
-//        ps.setString(1, username);
-//
-//        ResultSet rs = ps.executeQuery();
-//
-//        if (rs.next()) {
-//            return new Player(
-//                    rs.getString("username"),
-//                    rs.getString("password_hash"),
-//                    rs.getString("password_salt")
-//            );
-//
-//        }
-//
-//        rs.close();
-//
-//        return null;
-//    }
-
     public void update(String username, Player updatedPlayer) throws SQLException {
         Player existingPlayer = this.getPlayerByUsername(updatedPlayer.getUsername());
         List<String> updatedColumns = new ArrayList<>();
@@ -188,8 +160,6 @@ public class PlayerDAOImpl implements PlayerDAO {
             StringBuilder queryBuilder = new StringBuilder(String.format("UPDATE %s SET", this.tableName));
             String updateColumnsString = String.join(", ", updatedColumns);
             queryBuilder.append(" ").append(updateColumnsString).append(" WHERE username = ?");
-
-            System.out.println(queryBuilder);
 
             PreparedStatement statement = connection.prepareStatement(queryBuilder.toString());
 

@@ -3,10 +3,11 @@ package deckderby.utils;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import deckderby.Handler;
 import deckderby.controllers.PlayerController;
 import deckderby.models.Player;
-import deckderby.utils.logger.ApplicationLogger;
-import deckderby.utils.logger.LoggerContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -14,8 +15,7 @@ import java.util.List;
 
 public class ApplicationRouteDirector {
 
-    private final ApplicationLogger logger = LoggerContext.getInstance().getLogger();
-
+    private static final Logger logger = LogManager.getLogger(ApplicationRouteDirector.class);
     PlayerController playerController;
     String apiPrefix;
 

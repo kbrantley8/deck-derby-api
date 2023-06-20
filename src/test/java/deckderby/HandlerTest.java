@@ -26,18 +26,9 @@ public class HandlerTest {
 
     @Mock
     Context contextMock;
-    @Mock
-    LambdaLogger loggerMock;
 
     @BeforeEach
     public void setUp() {
-        when(contextMock.getLogger()).thenReturn(loggerMock);
-
-        doAnswer(call -> {
-            System.out.println((String)call.getArgument(0));
-            return null;
-        }).when(loggerMock).log(anyString());
-
         handler = new Handler();
     }
 

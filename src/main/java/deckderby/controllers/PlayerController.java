@@ -7,11 +7,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import deckderby.models.Player;
 import deckderby.models.requests.PlayerRequestBody;
 import deckderby.services.PlayerServiceImpl;
+import deckderby.utils.ApplicationRouteDirector;
 import deckderby.utils.DeckDerbyResponse;
-import deckderby.utils.logger.ApplicationLogger;
-import deckderby.utils.logger.LoggerContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -19,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class PlayerController implements Controller {
-    private final ApplicationLogger logger = LoggerContext.getInstance().getLogger();
+    private static final Logger logger = LogManager.getLogger(PlayerController.class);
     PlayerServiceImpl playerServiceImpl;
 
     public PlayerController() throws SQLException, ClassNotFoundException {
@@ -90,21 +91,21 @@ public class PlayerController implements Controller {
                     logger.info("Player was logged in successfully...");
                     return new DeckDerbyResponse().generateSuccessfulResponse(String.format("Player [%s] successfully logged in!", player.getUsername()));
                 case ("player"):
-                    if (Objects.equals(direction[4], "password")) {
+                    if (direction.length > 3 && Objects.equals(direction[4], "password")) {
                         username = event.getPathParameters().get("username");
                         logger.info(String.format("Updating password process started for [%s]...", username));
                         this.updatePassword(username, newPassword, oldPassword);
 
                         logger.info("Password updated successfully...");
                         return new DeckDerbyResponse().generateSuccessfulResponse(String.format("Player [%s] successfully updated password!", username));
-                    } else {
-                        return new DeckDerbyResponse().generateErrorResponse("The path doesn't exist!");
+                    } else if (direction.length == 3) {
+                        player = this.savePlayer(username, email, password);
+
+                        logger.info("Player was created successfully...");
+                        return new DeckDerbyResponse().generateSuccessfulResponse(String.format("Player with username [%s] was successfully created!", player.getUsername()));
                     }
                 default:
-                    player = this.savePlayer(username, email, password);
-
-                    logger.info("Player was created successfully...");
-                    return new DeckDerbyResponse().generateSuccessfulResponse(String.format("Player with username [%s] was successfully created!", player.getUsername()));
+                    return new DeckDerbyResponse().generateErrorResponse("The path doesn't exist!");
             }
         } catch (Exception e) {
             return new DeckDerbyResponse().generateErrorResponse(e.getMessage());
