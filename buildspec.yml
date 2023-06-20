@@ -22,8 +22,9 @@ phases:
   post_build:
     commands:
       - echo "Updating lambda Function..."
-      - EXISTING_POLICY=$(aws iam list-policies --query "Policies[?PolicyName=='$POLICY_NAME'].Arn" --output text) # Check if the policy already exists
-        if [[ -z "$EXISTING_POLICY" ]]; then
+      - |
+        EXISTING_POLICY=$(aws iam list-policies --query "Policies[?PolicyName=='$POLICY_NAME'].Arn" --output text) # Check if the policy already exists
+        if [ -z "$EXISTING_POLICY" ]; then
           echo "Policy does not exist. Creating new policy..."
         
           # Create IAM policy
@@ -40,8 +41,8 @@ phases:
         fi
         
         # Check if the role already exists
-      - EXISTING_ROLE=$(aws iam list-roles --query "Roles[?RoleName=='$ROLE_NAME'].Arn" --output text)
-        if [[ -z "$EXISTING_ROLE" ]]; then
+        EXISTING_ROLE=$(aws iam list-roles --query "Roles[?RoleName=='$ROLE_NAME'].Arn" --output text)
+        if [ -z "$EXISTING_ROLE" ]; then
           echo "Role does not exist. Creating new role..."
         
           # Create IAM role
@@ -58,8 +59,8 @@ phases:
         fi
         
         # Check if the Lambda function already exists
-      - EXISTING_FUNCTION=$(aws lambda get-function --function-name $LAMBDA_FUNCTION_NAME --output text)
-        if [[ "$?" -eq 0 ]]; then
+        EXISTING_FUNCTION=$(aws lambda get-function --function-name $LAMBDA_FUNCTION_NAME --output text)
+        if [ "$?" -eq 0 ]; then
           echo "Lambda function already exists."
           aws lambda update-function-code --function-name $LAMBDA_FUNCTION_NAME --zip-file fileb://./target/deck-derby-api-1.0.jar
           aws lambda update-function-configuration --function-name $LAMBDA_FUNCTION_NAME --environment Variables={ENV=dev}
