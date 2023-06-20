@@ -22,6 +22,7 @@ phases:
   post_build:
     commands:
       - echo "Updating lambda Function..."
+      - echo ls
       - |
         EXISTING_POLICY=$(aws iam list-policies --query "Policies[?PolicyName=='$POLICY_NAME'].Arn" --output text) # Check if the policy already exists
         if [ -z "$EXISTING_POLICY" ]; then
