@@ -28,7 +28,7 @@ phases:
           echo "Policy does not exist. Creating new policy..."
         
           # Create IAM policy
-          aws iam create-policy --policy-name $POLICY_NAME --policy-document file://aws-config/lambda-execution-policy.json
+          aws iam create-policy --policy-name $POLICY_NAME --policy-document file://./aws-config/lambda-execution-policy.json
         
           # Retrieve the newly created policy ARN
           POLICY_ARN=$(aws iam list-policies --query "Policies[?PolicyName=='$POLICY_NAME'].Arn" --output text)
@@ -37,7 +37,7 @@ phases:
         
           # Retrieve the existing policy ARN
           POLICY_ARN=$EXISTING_POLICY
-          aws iam update-policy --policy-arn $POLICY_ARN --policy-document file://aws-config/lambda-execution-policy.json
+          aws iam update-policy --policy-arn $POLICY_ARN --policy-document file://./aws-config/lambda-execution-policy.json
         fi
         
         # Check if the role already exists
@@ -46,7 +46,7 @@ phases:
           echo "Role does not exist. Creating new role..."
         
           # Create IAM role
-          aws iam create-role --role-name $ROLE_NAME --assume-role-policy-document file://aws-config/lambda-trust-policy.json
+          aws iam create-role --role-name $ROLE_NAME --assume-role-policy-document file://./aws-config/lambda-trust-policy.json
         
           # Retrieve the newly created role ARN
           ROLE_ARN=$(aws iam get-role --role-name $ROLE_NAME --query "Role.Arn" --output text)
@@ -55,7 +55,7 @@ phases:
         
           # Retrieve the existing role ARN
           ROLE_ARN=$EXISTING_ROLE
-          aws iam update-role --role-name $ROLE_NAME --assume-role-policy-document file://aws-config/lambda-trust-policy.json
+          aws iam update-role --role-name $ROLE_NAME --assume-role-policy-document file://./aws-config/lambda-trust-policy.json
         fi
         
         # Check if the Lambda function already exists
