@@ -51,7 +51,7 @@ phases:
         fi
 
       - |
-        if [ "$DEPLOY_ACTION = "update" ] ; then
+        if [ "$DEPLOY_ACTION" = "update" ] ; then
           POLICY_ARN=$(aws iam list-policies --query "Policies[?PolicyName=='$POLICY_NAME'].Arn" --output text) # Check if the policy already exists
           aws iam update-policy --policy-arn $POLICY_ARN --policy-document file://./aws-config/lambda-execution-policy.json
           
