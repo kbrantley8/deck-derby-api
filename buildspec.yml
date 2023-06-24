@@ -21,8 +21,7 @@ phases:
 
   post_build:
     commands:
-      - echo "Updating lambda Function..."
-      - echo $(ls) ;
+      - echo "Current action is - $DEPLOY_ACTION"
       - |
         if [ "$DEPLOY_ACTION" = "deploy" ] ; then
           # CHECK IF THEY ALREADY EXIST AND DELETE IF SO
