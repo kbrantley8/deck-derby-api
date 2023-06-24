@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    DEPLOY_ACTION: "deploy" # either deploy or update; does nothing for now
+    DEPLOY_ACTION: "update" # either deploy or update; does nothing for now
     LAMBDA_FUNCTION_NAME: "DeckDerbyJavaAPI"
     POLICY_NAME: "DeckDerbyAPI-Lambda-Policy"
     ROLE_NAME: "DeckDerbyAPI-Lambda-Role"
