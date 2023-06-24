@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  DeckDerbyJavaAPI:
+    Type: 'AWS::Serverless::Function'
+    DependsOn: DeckyDerbyAPI-Lambda-Role
+    Properties:
+      Handler: 'deckderby.Handler::handleRequest'
+      Runtime: java17
+      CodeUri: .
+      Description: ''
+      MemorySize: 128
+      Timeout: 3
+      Role: 'arn:aws:iam::267365946632:role/DeckDerbyAPI-Lambda-Role'
+      Environment:
+        Variables:
+          ENV: dev
+      KmsKeyArn: >-
+        arn:aws:kms:us-east-1:267365946632:key/520ac55c-5ce7-47db-a6c9-86e0864675aa
+      RuntimeManagementConfig:
+        UpdateRuntimeOn: Auto
+  DeckyDerbyAPI-Lambda-Policy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument: ./aws-config/lambda-execution-policy.json
+      PolicyName: DeckyDerbyAPI-Lambda-Policy
+  DeckyDerbyAPI-Lambda-Role:
+    Type: AWS::IAM::Role
+    DependsOn: DeckyDerbyAPI-Lambda-Policy
+    Properties:
+      AssumeRolePolicyDocument: ./aws-config/lambda-trust-policy.json
+      Description: Role For DeckDerbyAPI Lambda
+      Policies:
+        - !GetAtt DeckyDerbyAPI-Lambda-Policy.Arn
+      RoleName: DeckyDerbyAPI-Lambda-Role

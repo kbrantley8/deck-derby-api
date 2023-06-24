@@ -63,6 +63,7 @@ phases:
           aws lambda wait function-updated --function-name $LAMBDA_FUNCTION_NAME ;
           aws lambda update-function-configuration --function-name $LAMBDA_FUNCTION_NAME --kms-key-arn arn:aws:kms:us-east-1:267365946632:key/520ac55c-5ce7-47db-a6c9-86e0864675aa
         fi
+#        - aws cloudformation deploy --template-file file://.aws-config/app-stack.yml --stack-name DeckDerbyStack --capabilities CAPABILITY_NAMED_IAM
 #      - |
 #        EXISTING_POLICY=$(aws iam list-policies --query "Policies[?PolicyName=='$POLICY_NAME'].Arn" --output text) # Check if the policy already exists
 #        if [ -z "$EXISTING_POLICY" ]; then
