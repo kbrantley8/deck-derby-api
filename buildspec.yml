@@ -59,6 +59,7 @@ phases:
         
           EXISTING_FUNCTION=$(aws lambda get-function --function-name $LAMBDA_FUNCTION_NAME --output text)
           aws lambda update-function-code --function-name $LAMBDA_FUNCTION_NAME --zip-file fileb://./target/deck-derby-api-1.0.jar;
+          aws lambda wait function-updated --function-name $LAMBDA_FUNCTION_NAME ;
           aws lambda update-function-configuration --function-name $LAMBDA_FUNCTION_NAME --environment Variables={ENV=dev};
         fi
 #      - |
