@@ -22,7 +22,7 @@ phases:
   post_build:
     commands:
       - echo "Updating lambda Function..."
-      - echo ls
+      - echo $(ls) ;
       - |
         if [ "$DEPLOY_ACTION" = "deploy" ] ; then
           aws iam create-policy --policy-name $POLICY_NAME --policy-document file://./aws-config/lambda-execution-policy.json ;
