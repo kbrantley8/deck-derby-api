@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    DEPLOY_ACTION: "update" # either deploy or update; does nothing for now
+    DEPLOY_ACTION: "deploy" # either deploy or update; does nothing for now
     LAMBDA_FUNCTION_NAME: "DeckDerbyJavaAPI"
     POLICY_NAME: "DeckDerbyAPI-Lambda-Policy"
     ROLE_NAME: "DeckDerbyAPI-Lambda-Role"
@@ -46,7 +46,7 @@ phases:
         
           aws iam attach-role-policy --role-name $ROLE_NAME --policy-arn $POLICY_ARN ;
         
-          aws lambda create-function --function-name $LAMBDA_FUNCTION_NAME --runtime java17 --role $ROLE_ARN --handler deckderby.Handler::handleRequest --zip-file fileb://./target/deck-derby-api-1.0.jar --region us-east-1 --environment Variables={ENV=dev} ;        
+          aws lambda create-function --function-name $LAMBDA_FUNCTION_NAME --runtime java17 --role $ROLE_ARN --handler deckderby.Handler::handleRequest --zip-file fileb://./target/deck-derby-api-1.0.jar --region us-east-1 --environment Variables={ENV=dev} --kms-key-arn arn:aws:kms:us-east-1:267365946632:key/520ac55c-5ce7-47db-a6c9-86e0864675aa;        
         fi
 
       - |
@@ -60,6 +60,8 @@ phases:
           aws lambda update-function-code --function-name $LAMBDA_FUNCTION_NAME --zip-file fileb://./target/deck-derby-api-1.0.jar;
           aws lambda wait function-updated --function-name $LAMBDA_FUNCTION_NAME ;
           aws lambda update-function-configuration --function-name $LAMBDA_FUNCTION_NAME --environment Variables={ENV=dev};
+          aws lambda wait function-updated --function-name $LAMBDA_FUNCTION_NAME ;
+          aws lambda update-function-configuration --function-name $LAMBDA_FUNCTION_NAME --kms-key-arn arn:aws:kms:us-east-1:267365946632:key/520ac55c-5ce7-47db-a6c9-86e0864675aa
         fi
 #      - |
 #        EXISTING_POLICY=$(aws iam list-policies --query "Policies[?PolicyName=='$POLICY_NAME'].Arn" --output text) # Check if the policy already exists
