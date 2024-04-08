@@ -13,3 +13,101 @@
 - Create RDS instance on AWS (try to automate with CodeBuild using this repo)
 - Create API Gateway endpoints (same as above)
 - Upload to Lambda
+
+## Endpoint(s) Design - No Auth
+
+<details>
+    <summary>/register</summary>
+
+```python
+class Request:
+    email: str
+    username: str
+    password: str
+
+class Response:
+    message: str
+    userId: str
+```
+
+</details>
+
+<details>
+    <summary>/login</summary>
+
+```python
+class Request:
+    username: str
+    password: str
+
+class Response:
+    message: str
+    userId: str
+    username: str
+    totalWinnings: int
+```
+
+</details>
+
+<details>
+    <summary>/getUser</summary>
+
+```python
+class Request:
+    username: str
+
+class Response:
+    message: str
+    userId: str
+    username: str
+    totalWinnings: int
+```
+
+</details>
+
+## Endpoint(s) Design
+
+<details>
+    <summary>/register</summary>
+
+```python
+class Request:
+    email: str
+    username: str
+    password: str
+
+class Response:
+    message: str
+    userId: str
+```
+
+</details>
+
+<details>
+    <summary>/login</summary>
+
+```python
+class Request:
+    username: str
+    password: str
+
+class Response:
+    message: str
+    userId: str
+    accessToken: str
+    refreshToken: str
+```
+
+</details>
+
+<details>
+    <summary>/logout</summary>
+
+```python
+class Request:
+    accessToken: str
+
+class Response:
+    message: str
+```
+</details>
