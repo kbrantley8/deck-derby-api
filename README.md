@@ -1,5 +1,9 @@
 # Deck Derby API
 
+## Run
+
+`sam build && sam local start-api --warm-containers eager`
+
 ## Design Document
 
 - I want to have users, where each user can login/register with Deck Derby.
