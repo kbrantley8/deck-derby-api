@@ -1,7 +1,7 @@
 package deckderby.core;
 
 import java.sql.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "player")
@@ -23,16 +23,21 @@ public class Player {
     @Column(nullable = false)
     private String password_salt;
 
-    @Column()
     private Integer total_winnings;
 
-    @Column()
     private String confirmation_code;
 
-    @Column()
     private Date confirmation_date;
 
     public Player() { };
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
     public String getUsername() {
         return username;

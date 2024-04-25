@@ -3,6 +3,11 @@
 ## Run
 
 `sam build && sam local start-api --warm-containers eager`
+`mvn spring-boot:run -D"spring-boot.run.profiles"=local`
+
+For docker:
+`$env:SPRING_PROFILES_ACTIVE="localdocker"` or whatever OS you're using.
+`sam local start-api --warm-containers eager --docker-network deck-derby-network`
 
 ## Design Document
 

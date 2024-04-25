@@ -1,7 +1,7 @@
 package deckderby.core;
 
-// import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-// public interface IPlayerRepository extends CrudRepository<Player, Long> {
+public interface IPlayerRepository extends JpaRepository<Player, Long> {
     
-// }
+}

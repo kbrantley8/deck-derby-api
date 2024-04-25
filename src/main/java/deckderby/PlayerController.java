@@ -2,14 +2,13 @@ package deckderby;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import deckderby.core.PlayerDTO;
 import deckderby.core.PlayerService;
-
-import javax.validation.Valid;
+import deckderby.dto.PlayerResponseDTO;
+import jakarta.validation.Valid;
 
 @RestController
 public class PlayerController {
@@ -22,11 +21,12 @@ public class PlayerController {
     }
     
     @PostMapping("/player")
-    ResponseEntity<PlayerDTO> createPlayer(@Valid @RequestBody PlayerDTO player) {
-        LOG.info("Received message: {}", player);
+    ResponseEntity<PlayerResponseDTO> createPlayer(@Valid @RequestBody PlayerDTO player) {
+        LOG.info("Received request to create player: {}", player);
 
         var createdPlayer = playerService.createPlayer(player);
 
+        LOG.info("Player successfully created: {}", createdPlayer);
         return ResponseEntity.ok(createdPlayer);
     }
 }

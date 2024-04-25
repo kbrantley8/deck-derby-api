@@ -11,11 +11,14 @@ Resources:
       Runtime: java17
       CodeUri: .
       Timeout: 30
+      Environment:
+        Variables:
+          SPRING_PROFILES_ACTIVE: localdocker
       Architectures:
         - x86_64
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /hello
-            Method: GET
+            Path: /{patch}
+            Method: Any

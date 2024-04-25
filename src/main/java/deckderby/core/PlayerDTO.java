@@ -1,6 +1,6 @@
 package deckderby.core;
 
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 
 public class PlayerDTO {
     @NotBlank(message="username cannot be blank")
@@ -38,7 +38,7 @@ public class PlayerDTO {
 
     @Override
     public String toString() {
-        return "PlayerDTO [username=" + username + ", email=" + email + ", password=" + password + "]";
+        return "PlayerDTO [username=" + username + ", email=" + email + "]";
     }
 
     
