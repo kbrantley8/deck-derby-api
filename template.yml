@@ -10,7 +10,7 @@ Resources:
       Handler: deckderby.StreamLambdaHandler::handleRequest
       Runtime: java17
       CodeUri: .
-      Timeout: 5
+      Timeout: 30
       Architectures:
         - x86_64
       Events:
