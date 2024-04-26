@@ -100,7 +100,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>deckderby.MySpringBootApplication</mainClass> <!-- Change to your main class -->
+                    <mainClass>deckderby.DeckDerbyApplication</mainClass>
                 </configuration>
             </plugin>
             <plugin>

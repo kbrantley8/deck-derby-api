@@ -1,6 +1,8 @@
-package deckderby.dto;
+package deckderby.model.dto;
 
-public class PlayerResponseDTO {
+import deckderby.model.IPlayerResponse;
+
+public class PlayerAuthResponseDTO implements IPlayerResponse {
     private String username;
     private long userId;
 

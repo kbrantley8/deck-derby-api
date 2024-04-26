@@ -1,43 +1,43 @@
-package deckderby.models;
+package deckderby.model.entities;
 
-import java.io.Serializable;
 import java.sql.Date;
+import jakarta.persistence.*;
 
-public class Player implements Serializable {
+@Entity
+@Table(name = "player")
+public class Player {
 
-    String username;
-    String email;
-    String password_hash;
-    String password_salt;
-    Integer total_winnings;
-    String confirmation_code;
-    Date confirmation_date;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long userId;
 
-    public Player(String username, String email, String password_hash, String password_salt, Integer total_winnings, String confirmation_code, Date confirmation_date) {
-        this.username = username;
-        this.email = email;
-        this.password_hash = password_hash;
-        this.password_salt = password_salt;
-        this.total_winnings = total_winnings;
-        this.confirmation_code = confirmation_code;
-        this.confirmation_date = confirmation_date;
-    }
+    @Column(nullable = false, unique = true)
+    private String username;
 
-    public Player(String username, String email, String password_hash, String password_salt, Integer total_winnings) {
-        this.username = username;
-        this.email = email;
-        this.password_hash = password_hash;
-        this.password_salt = password_salt;
-        this.total_winnings = total_winnings;
-    }
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    public Player(String username, String password_hash, String password_salt) {
-        this.username = username;
-        this.password_hash = password_hash;
-        this.password_salt = password_salt;
-    }
+    @Column(nullable = false)
+    private String password_hash;
+
+    @Column(nullable = false)
+    private String password_salt;
+
+    private Integer total_winnings;
+
+    private String confirmation_code;
+
+    private Date confirmation_date;
 
     public Player() { };
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
     public String getUsername() {
         return username;

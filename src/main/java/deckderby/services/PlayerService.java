@@ -1,26 +1,84 @@
 package deckderby.services;
 
-import deckderby.models.Player;
+import org.springframework.stereotype.Service;
 
-import java.sql.Date;
-import java.sql.SQLException;
+import deckderby.model.IPlayerResponse;
+import deckderby.model.PlayerErrorResponse;
+import deckderby.model.dto.PlayerLoginRequestDTO;
+import deckderby.model.dto.PlayerRegisterRequestDTO;
+import deckderby.model.entities.Player;
+import deckderby.model.dto.PlayerAuthResponseDTO;
+import deckderby.model.dto.PlayerBaseResponseDTO;
+import deckderby.repositories.IPlayerRepository;
 
-public interface PlayerService {
-    public Player getPlayerByUsername(String username) throws SQLException;
+import org.mindrot.jbcrypt.BCrypt;
 
-    public Player getPlayerByEmail(String email) throws SQLException;
+@Service
+public class PlayerService {
 
-    public Player savePlayer(String username, String email, String password) throws SQLException;
+    private final IPlayerRepository playerRepository;
 
-    public Player loginPlayer(String username, String password) throws Exception;
+    public PlayerService(IPlayerRepository playerRepository){
+        this.playerRepository = playerRepository;
+    }
+    
 
-    public void updateEmail(String username, String email) throws SQLException;
+    public IPlayerResponse createPlayer(PlayerRegisterRequestDTO playerDTO) {
+        Player player = new Player();
+        
+        String salt = this.createSalt();
+        player.setUsername(playerDTO.getUsername());
+        player.setEmail(playerDTO.getEmail());
+        player.setPassword_hash(hashPassword(playerDTO.getPassword(), salt));
+        player.setPassword_salt(salt);
 
-    public void updateTotalWinnings(String username, Integer newTotalWinnings) throws SQLException;
+        Player savedPlayer = this.playerRepository.save(player);
 
-    public void updateConfirmationCode(String username, String newConfirmationCode) throws SQLException;
+        PlayerAuthResponseDTO playerResponseDTO = new PlayerAuthResponseDTO();
+        playerResponseDTO.setUserId(savedPlayer.getUserId());
+        playerResponseDTO.setUsername(savedPlayer.getUsername());
 
-    public void updateConfirmationDate(String username, Date newConfirmationDate) throws SQLException;
+        return playerResponseDTO;
+    }
 
-    public void updatePassword(String username, String newPassword, String oldPassword) throws SQLException;
+    public IPlayerResponse loginPlayer(PlayerLoginRequestDTO playerDTO) {
+        Player existingPlayer = this.playerRepository.findByUsername(playerDTO.getUsername());
+
+        String providedPassword = playerDTO.getPassword();
+        String hashedPassword = existingPlayer.getPassword_hash();
+        
+        if (this.verifyPassword(providedPassword, hashedPassword)) {
+            PlayerAuthResponseDTO playerResponseDTO = new PlayerAuthResponseDTO();
+            playerResponseDTO.setUserId(existingPlayer.getUserId());
+            playerResponseDTO.setUsername(existingPlayer.getUsername());
+            return playerResponseDTO;
+        } else {
+            PlayerErrorResponse playerErrorResponse = new PlayerErrorResponse();
+            playerErrorResponse.setMessage("The provided username/password was not correct.");
+            return playerErrorResponse;
+        }
+    }
+
+    public IPlayerResponse getPlayer(String username) {
+        Player existingPlayer = this.playerRepository.findByUsername(username);
+
+        PlayerBaseResponseDTO playerBaseResponseDTO = new PlayerBaseResponseDTO();
+        playerBaseResponseDTO.setUserId(existingPlayer.getUserId());
+        playerBaseResponseDTO.setUsername(existingPlayer.getUsername());
+        playerBaseResponseDTO.setTotal_winnings(existingPlayer.getTotal_winnings());
+
+        return playerBaseResponseDTO;
+    }
+
+    private String createSalt() {
+        return BCrypt.gensalt();
+    }
+
+    private String hashPassword(String password, String salt) {
+        return BCrypt.hashpw(password, salt);
+    }
+
+    private boolean verifyPassword(String password, String hashedPassword) {
+        return BCrypt.checkpw(password, hashedPassword);
+    }
 }

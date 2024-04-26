@@ -9,13 +9,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication()
-public class MySpringBootApplication {
+public class DeckDerbyApplication {
     private static final Logger LOG = LogManager.getLogger();
 
     public static void main(String[] args) {
         LOG.info("Application startup");
 
-        SpringApplication.run(MySpringBootApplication.class, args);
+        SpringApplication.run(DeckDerbyApplication.class, args);
     }
 
     @Bean

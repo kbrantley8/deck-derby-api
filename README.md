@@ -3,7 +3,7 @@
 ## Run
 
 `sam build && sam local start-api --warm-containers eager`
-`mvn spring-boot:run -D"spring-boot.run.profiles"=local`
+`mvn spring-boot:run -D"spring-boot.run.profiles"=local` <- Removed local for easier local runs
 
 For docker:
 `$env:SPRING_PROFILES_ACTIVE="localdocker"` or whatever OS you're using.
@@ -59,7 +59,7 @@ class Response:
 </details>
 
 <details>
-    <summary>/getUser</summary>
+    <summary>/player/{username}</summary>
 
 ```python
 class Request:
